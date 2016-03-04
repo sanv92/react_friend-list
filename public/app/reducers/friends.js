@@ -13,59 +13,36 @@ export default function friends(state = initialState, action) {
   switch (action.type) {
     case ADD_NEW_USER:
       return [
+        ...state,
         {
           id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1,
-          completed: false,
-          text: action.text
-        }, 
-        ...state
+          name: '',
+          friend: false,
+          online: false,
+          like: 0
+        }
       ]
 
-    case ADD_FRIEND:
-    case REMOVE_FRIEND:
+    case ADD_REMOVE_FRIEND:
+      return state.map(friend =>
+        friend.id === action.id ?
+          Object.assign({}, friend, { friend: !todo.completed }) :
+          friend
+      )
+
     case ADD_LIKE:
+      return state.map(friend =>
+        friend.id === action.id ?
+          Object.assign({}, friend, { like: 1 }) :
+          friend
+      )
+
     case REMOVE_LIKE:
-    default:
-
-
-
-    case ADD_TODO:
-      return [
-        {
-          id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1,
-          completed: false,
-          text: action.text
-        }, 
-        ...state
-      ]
-
-    case DELETE_TODO:
-      return state.filter(todo =>
-        todo.id !== action.id
+      return state.map(friend =>
+        friend.id === action.id ?
+          Object.assign({}, friend, { like: 0 }) :
+          friend
       )
-
-    case EDIT_TODO:
-      return state.map(todo =>
-        todo.id === action.id ?
-          Object.assign({}, todo, { text: action.text }) :
-          todo
-      )
-
-    case COMPLETE_TODO:
-      return state.map(todo =>
-        todo.id === action.id ?
-          Object.assign({}, todo, { completed: !todo.completed }) :
-          todo
-      )
-
-    case COMPLETE_ALL:
-      const areAllMarked = state.every(todo => todo.completed)
-      return state.map(todo => Object.assign({}, todo, {
-        completed: !areAllMarked
-      }))
-
-    case CLEAR_COMPLETED:
-      return state.filter(todo => todo.completed === false)
 
     default:
       return state
