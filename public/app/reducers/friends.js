@@ -1,4 +1,4 @@
-import { ADD_NEW_USER, ADD_REMOVE_FRIEND, REMOVE_FRIEND, ADD_LIKE, REMOVE_LIKE } from '../constants/ActionTypes'
+import { ADD_NEW_USER, ADD_REMOVE_FRIEND, ADD_REMOVE_LIKE } from '../constants/ActionTypes'
 
 /*
 const initialState = [
@@ -30,7 +30,7 @@ const initialState = [
     id: 3,
     name: 'Sander',
     friend: false,
-    online: false,
+    online: true,
     like: 0
   }
 ]
@@ -41,7 +41,7 @@ export default function friends(state = initialState, action) {
       return [
         ...state,
         {
-          id: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1,
+          id: state.reduce((maxId, friend) => Math.max(friend.id, maxId), -1) + 1,
           name: action.name,
           friend: false,
           online: false,
@@ -52,23 +52,25 @@ export default function friends(state = initialState, action) {
     case ADD_REMOVE_FRIEND:
       return state.map(friend =>
         friend.id === action.id ?
-          Object.assign({}, friend, { friend: !todo.completed }) :
+          Object.assign({}, friend, { friend: !friend.friend }) :
           friend
       )
 
-    case ADD_LIKE:
+    case ADD_REMOVE_LIKE:
       return state.map(friend =>
         friend.id === action.id ?
-          Object.assign({}, friend, { like: 1 }) :
+          Object.assign({}, friend, { like: (friend.like) ? 0 : 1 }) :
           friend
       )
 
+/*
     case REMOVE_LIKE:
       return state.map(friend =>
         friend.id === action.id ?
           Object.assign({}, friend, { like: 0 }) :
           friend
       )
+*/
 
     default:
       return state

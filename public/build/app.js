@@ -60,7 +60,7 @@
 
 	var _App2 = _interopRequireDefault(_App);
 
-	var _configureStore = __webpack_require__(472);
+	var _configureStore = __webpack_require__(473);
 
 	var _configureStore2 = _interopRequireDefault(_configureStore);
 
@@ -28617,7 +28617,7 @@
 
 	var _MainSection2 = _interopRequireDefault(_MainSection);
 
-	var _actions = __webpack_require__(470);
+	var _actions = __webpack_require__(471);
 
 	var FriendActions = _interopRequireWildcard(_actions);
 
@@ -28858,6 +28858,8 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+	var _FRIEND_FILTERS;
+
 	var _react = __webpack_require__(286);
 
 	var _react2 = _interopRequireDefault(_react);
@@ -28866,7 +28868,11 @@
 
 	var _FriendItem2 = _interopRequireDefault(_FriendItem);
 
-	var _FriendsFilters = __webpack_require__(469);
+	var _Footer = __webpack_require__(469);
+
+	var _Footer2 = _interopRequireDefault(_Footer);
+
+	var _FriendsFilters = __webpack_require__(470);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -28875,6 +28881,14 @@
 	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
 	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	var FRIEND_FILTERS = (_FRIEND_FILTERS = {}, _defineProperty(_FRIEND_FILTERS, _FriendsFilters.SHOW_ALL_FRIENDS, function (friend) {
+	  return true;
+	}), _defineProperty(_FRIEND_FILTERS, _FriendsFilters.SHOW_ONLINE_FRIENDS, function (friend) {
+	  return friend.online;
+	}), _FRIEND_FILTERS);
 
 	var MainSection = function (_Component) {
 	  _inherits(MainSection, _Component);
@@ -28885,16 +28899,31 @@
 	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(MainSection).call(this, props));
 
 	    _this.state = { filter: _FriendsFilters.SHOW_ALL_FRIENDS };
+
+	    _this.handleShow = _this.handleShow.bind(_this);
 	    return _this;
 	  }
 
 	  _createClass(MainSection, [{
+	    key: 'handleShow',
+	    value: function handleShow(filter) {
+	      console.log(filter);
+	      this.setState({ filter: filter });
+	    }
+	  }, {
+	    key: 'renderFooter',
+	    value: function renderFooter() {
+	      return _react2.default.createElement(_Footer2.default, { onShow: this.handleShow });
+	    }
+	  }, {
 	    key: 'render',
 	    value: function render() {
 	      var _props = this.props;
 	      var friends = _props.friends;
 	      var actions = _props.actions;
+	      var filter = this.state.filter;
 
+	      var filteredFriends = friends.filter(FRIEND_FILTERS[filter]);
 
 	      return _react2.default.createElement(
 	        'section',
@@ -28905,7 +28934,25 @@
 	          _react2.default.createElement(
 	            'div',
 	            { className: 'col-md-4' },
-	            '.col-md-6'
+	            this.renderFooter(),
+	            _react2.default.createElement(
+	              'ul',
+	              { className: 'list-group' },
+	              filteredFriends.map(function (friend) {
+	                if (friend.friend) {
+	                  return _react2.default.createElement(_FriendItem2.default, _extends({ key: friend.id, friend: friend }, actions));
+	                }
+	              })
+	            ),
+	            '[All: ',
+	            friends.filter(function (friend) {
+	              return friend.friend;
+	            }).length,
+	            '] [Online: ',
+	            friends.filter(function (friend) {
+	              return friend.friend && friend.online;
+	            }).length,
+	            ']'
 	          ),
 	          _react2.default.createElement(
 	            'div',
@@ -28914,9 +28961,16 @@
 	              'ul',
 	              { className: 'list-group' },
 	              friends.map(function (friend) {
-	                return _react2.default.createElement(_FriendItem2.default, _extends({ key: friend.id, friend: friend }, actions));
+	                if (!friend.friend) {
+	                  return _react2.default.createElement(_FriendItem2.default, _extends({ key: friend.id, friend: friend }, actions));
+	                }
 	              })
-	            )
+	            ),
+	            '[',
+	            friends.filter(function (friend) {
+	              return !friend.friend;
+	            }).length,
+	            ']'
 	          )
 	        )
 	      );
@@ -28969,13 +29023,42 @@
 	  _createClass(FriendItem, [{
 	    key: "render",
 	    value: function render() {
-	      var friend = this.props.friend;
+	      var _props = this.props;
+	      var friend = _props.friend;
+	      var addRemoveLike = _props.addRemoveLike;
+	      var addRemoveFriend = _props.addRemoveFriend;
 
 
 	      return _react2.default.createElement(
 	        "li",
 	        { className: "list-group-item" },
-	        friend.name
+	        _react2.default.createElement(
+	          "div",
+	          null,
+	          _react2.default.createElement(
+	            "h4",
+	            null,
+	            friend.name
+	          )
+	        ),
+	        _react2.default.createElement(
+	          "div",
+	          { className: "btn-group" },
+	          _react2.default.createElement(
+	            "button",
+	            { type: "button", className: "btn btn-default", onClick: function onClick() {
+	                return addRemoveLike(friend.id);
+	              } },
+	            friend.like === 0 ? 'Like' : 'Remove Like'
+	          ),
+	          _react2.default.createElement(
+	            "button",
+	            { type: "button", className: "btn btn-default", onClick: function onClick() {
+	                return addRemoveFriend(friend.id);
+	              } },
+	            friend.friend === false ? 'Add Friend' : 'Remove Friend'
+	          )
+	        )
 	      );
 	    }
 	  }]);
@@ -28984,13 +29067,102 @@
 	}(_react.Component);
 
 	FriendItem.propTypes = {
-	  friend: _react.PropTypes.object.isRequired
+	  friend: _react.PropTypes.object.isRequired,
+	  addRemoveFriend: _react.PropTypes.func.isRequired,
+	  addRemoveLike: _react.PropTypes.func.isRequired
 	};
 
 	exports.default = FriendItem;
 
 /***/ },
 /* 469 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _FILTER_TITLES;
+
+	var _react = __webpack_require__(286);
+
+	var _react2 = _interopRequireDefault(_react);
+
+	var _FriendsFilters = __webpack_require__(470);
+
+	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
+
+	function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
+
+	function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
+
+	var FILTER_TITLES = (_FILTER_TITLES = {}, _defineProperty(_FILTER_TITLES, _FriendsFilters.SHOW_ALL_FRIENDS, 'All'), _defineProperty(_FILTER_TITLES, _FriendsFilters.SHOW_ONLINE_FRIENDS, 'Online'), _FILTER_TITLES);
+
+	var Footer = function (_Component) {
+	  _inherits(Footer, _Component);
+
+	  function Footer() {
+	    _classCallCheck(this, Footer);
+
+	    return _possibleConstructorReturn(this, Object.getPrototypeOf(Footer).apply(this, arguments));
+	  }
+
+	  _createClass(Footer, [{
+	    key: 'renderFilterLink',
+
+	    //const { completedCount, onClearCompleted } = this.props
+
+	    value: function renderFilterLink(filter) {
+	      var title = FILTER_TITLES[filter];
+	      var onShow = this.props.onShow;
+
+
+	      return _react2.default.createElement(
+	        'a',
+	        { onClick: function onClick() {
+	            return onShow(filter);
+	          } },
+	        title
+	      );
+	    }
+	  }, {
+	    key: 'render',
+	    value: function render() {
+	      var _this2 = this;
+
+	      return _react2.default.createElement(
+	        'footer',
+	        { className: 'footer' },
+	        _react2.default.createElement(
+	          'ul',
+	          { className: 'filters' },
+	          [_FriendsFilters.SHOW_ALL_FRIENDS, _FriendsFilters.SHOW_ONLINE_FRIENDS].map(function (filter) {
+	            return _react2.default.createElement(
+	              'li',
+	              { key: filter },
+	              _this2.renderFilterLink(filter)
+	            );
+	          })
+	        )
+	      );
+	    }
+	  }]);
+
+	  return Footer;
+	}(_react.Component);
+
+	exports.default = Footer;
+
+/***/ },
+/* 470 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -29002,7 +29174,7 @@
 	var SHOW_ONLINE_FRIENDS = exports.SHOW_ONLINE_FRIENDS = 'SHOW_ONLINE_FRIENDS';
 
 /***/ },
-/* 470 */
+/* 471 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29012,10 +29184,11 @@
 	});
 	exports.addNewUser = addNewUser;
 	exports.addRemoveFriend = addRemoveFriend;
-	exports.addLike = addLike;
-	exports.removeLike = removeLike;
+	exports.addRemoveLike = addRemoveLike;
+	exports.showAll = showAll;
+	exports.showOnline = showOnline;
 
-	var _ActionTypes = __webpack_require__(471);
+	var _ActionTypes = __webpack_require__(472);
 
 	var types = _interopRequireWildcard(_ActionTypes);
 
@@ -29029,16 +29202,20 @@
 	  return { type: types.ADD_REMOVE_FRIEND, id: id };
 	}
 
-	function addLike(id) {
-	  return { type: types.ADD_LIKE, id: id };
+	function addRemoveLike(id) {
+	  return { type: types.ADD_REMOVE_LIKE, id: id };
 	}
 
-	function removeLike(id) {
-	  return { type: types.REMOVE_LIKE, id: id };
+	function showAll() {
+	  return { type: types.SHOW_ALL_FRIENDS };
+	}
+
+	function showOnline() {
+	  return { type: types.SHOW_ONLINE_FRIENDS };
 	}
 
 /***/ },
-/* 471 */
+/* 472 */
 /***/ function(module, exports) {
 
 	'use strict';
@@ -29048,12 +29225,11 @@
 	});
 	var ADD_NEW_USER = exports.ADD_NEW_USER = 'ADD_NEW_USER';
 	var ADD_REMOVE_FRIEND = exports.ADD_REMOVE_FRIEND = 'ADD_REMOVE_FRIEND';
-	var REMOVE_FRIEND = exports.REMOVE_FRIEND = 'REMOVE_FRIEND';
-	var ADD_LIKE = exports.ADD_LIKE = 'ADD_LIKE';
-	var REMOVE_LIKE = exports.REMOVE_LIKE = 'REMOVE_LIKE';
+	var ADD_REMOVE_LIKE = exports.ADD_REMOVE_LIKE = 'ADD_REMOVE_LIKE';
+	//export const REMOVE_LIKE = 'REMOVE_LIKE'
 
 /***/ },
-/* 472 */
+/* 473 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29065,7 +29241,7 @@
 
 	var _redux = __webpack_require__(449);
 
-	var _reducers = __webpack_require__(473);
+	var _reducers = __webpack_require__(474);
 
 	var _reducers2 = _interopRequireDefault(_reducers);
 
@@ -29086,7 +29262,7 @@
 	}
 
 /***/ },
-/* 473 */
+/* 474 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29097,7 +29273,7 @@
 
 	var _redux = __webpack_require__(449);
 
-	var _friends = __webpack_require__(474);
+	var _friends = __webpack_require__(475);
 
 	var _friends2 = _interopRequireDefault(_friends);
 
@@ -29110,7 +29286,7 @@
 	exports.default = rootReducer;
 
 /***/ },
-/* 474 */
+/* 475 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -29120,7 +29296,7 @@
 	});
 	exports.default = friends;
 
-	var _ActionTypes = __webpack_require__(471);
+	var _ActionTypes = __webpack_require__(472);
 
 	function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
 
@@ -29151,7 +29327,7 @@
 	  id: 3,
 	  name: 'Sander',
 	  friend: false,
-	  online: false,
+	  online: true,
 	  like: 0
 	}];
 
@@ -29162,8 +29338,8 @@
 	  switch (action.type) {
 	    case _ActionTypes.ADD_NEW_USER:
 	      return [].concat(_toConsumableArray(state), [{
-	        id: state.reduce(function (maxId, todo) {
-	          return Math.max(todo.id, maxId);
+	        id: state.reduce(function (maxId, friend) {
+	          return Math.max(friend.id, maxId);
 	        }, -1) + 1,
 	        name: action.name,
 	        friend: false,
@@ -29173,18 +29349,22 @@
 
 	    case _ActionTypes.ADD_REMOVE_FRIEND:
 	      return state.map(function (friend) {
-	        return friend.id === action.id ? Object.assign({}, friend, { friend: !todo.completed }) : friend;
+	        return friend.id === action.id ? Object.assign({}, friend, { friend: !friend.friend }) : friend;
 	      });
 
-	    case _ActionTypes.ADD_LIKE:
+	    case _ActionTypes.ADD_REMOVE_LIKE:
 	      return state.map(function (friend) {
-	        return friend.id === action.id ? Object.assign({}, friend, { like: 1 }) : friend;
+	        return friend.id === action.id ? Object.assign({}, friend, { like: friend.like ? 0 : 1 }) : friend;
 	      });
 
-	    case _ActionTypes.REMOVE_LIKE:
-	      return state.map(function (friend) {
-	        return friend.id === action.id ? Object.assign({}, friend, { like: 0 }) : friend;
-	      });
+	    /*
+	        case REMOVE_LIKE:
+	          return state.map(friend =>
+	            friend.id === action.id ?
+	              Object.assign({}, friend, { like: 0 }) :
+	              friend
+	          )
+	    */
 
 	    default:
 	      return state;

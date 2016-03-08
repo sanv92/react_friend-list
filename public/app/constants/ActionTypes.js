@@ -1,5 +1,4 @@
 export const ADD_NEW_USER = 'ADD_NEW_USER'
 export const ADD_REMOVE_FRIEND = 'ADD_REMOVE_FRIEND'
-export const REMOVE_FRIEND = 'REMOVE_FRIEND'
-export const ADD_LIKE = 'ADD_LIKE'
-export const REMOVE_LIKE = 'REMOVE_LIKE'
+export const ADD_REMOVE_LIKE = 'ADD_REMOVE_LIKE'
+//export const REMOVE_LIKE = 'REMOVE_LIKE'

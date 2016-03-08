@@ -8,10 +8,14 @@ export function addRemoveFriend(id) {
   return { type: types.ADD_REMOVE_FRIEND, id }
 }
 
-export function addLike(id) {
-  return { type: types.ADD_LIKE, id }
+export function addRemoveLike(id) {
+  return { type: types.ADD_REMOVE_LIKE, id }
 }
 
-export function removeLike(id) {
-  return { type: types.REMOVE_LIKE, id }
+export function showAll() {
+  return { type: types.SHOW_ALL_FRIENDS }
+}
+
+export function showOnline() {
+  return { type: types.SHOW_ONLINE_FRIENDS }
 }
